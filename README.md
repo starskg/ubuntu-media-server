@@ -45,14 +45,14 @@ The system is layered as follows:
 The easiest way to get started. Just run one command and follow the prompts:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-streaming-server/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/install.sh | bash
 ```
 
 **Or download first, then run:**
 
 ```bash
 # Download the installer
-curl -O https://raw.githubusercontent.com/starskg/android-streaming-server/main/install.sh
+curl -O https://raw.githubusercontent.com/starskg/android-media-server/main/install.sh
 
 # Make it executable
 chmod +x install.sh
@@ -80,7 +80,7 @@ chmod +x install.sh
 
 **Step 2:** Run the installation command:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-streaming-server/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/install.sh | bash
 ```
 
 **Step 3:** Follow the interactive prompts:
@@ -170,7 +170,7 @@ After installation completes, you'll see:
 For advanced users who want zero interaction:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-streaming-server/main/quick-install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/quick-install.sh | bash
 ```
 
 **Default settings:**
@@ -254,7 +254,7 @@ nginx -s reload
 
 ```bash
 # Download and run status checker
-curl -fsSL https://raw.githubusercontent.com/starskg/android-streaming-server/main/check-status.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/check-status.sh | bash
 ```
 
 Or use the built-in alias:
@@ -389,7 +389,7 @@ ssh -p 8022 $(whoami)@localhost
 ## 🗑️ Uninstallation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-streaming-server/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/uninstall.sh | bash
 ```
 
 The uninstaller will:
