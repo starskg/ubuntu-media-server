@@ -143,6 +143,20 @@ install_mistserver() {
     return 0
 }
 
+install_web_ui() {
+    log_info "Installing Web Proxy Interface..."
+    
+    local html_dir="/var/www/html"
+    mkdir -p "$html_dir"
+    
+    curl -fsSL https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/web/index.html -o "$html_dir/index.html" >> "$LOGFILE" 2>&1
+    curl -fsSL https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/web/style.css -o "$html_dir/style.css" >> "$LOGFILE" 2>&1
+    curl -fsSL https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/web/script.js -o "$html_dir/script.js" >> "$LOGFILE" 2>&1
+    
+    log "✓ Web interface installed"
+    return 0
+}
+
 configure_nginx() {
     log_info "Configuring Nginx proxy..."
 
@@ -352,6 +366,9 @@ main() {
     if ! configure_nginx; then
         log_error "Nginx configuration failed, but continuing..."
     fi
+    echo
+    
+    install_web_ui
     echo
 
     # Optional: File Browser
