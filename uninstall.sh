@@ -33,9 +33,9 @@ echo "  • Optionally remove packages"
 echo "  • Restore backups (if available)"
 echo
 
-read -p "Are you sure you want to continue? (yes/no): " confirm
+read -p "Are you sure you want to continue? (y/n): " confirm
 
-if [ "$confirm" != "yes" ]; then
+if [[ ! "$confirm" =~ ^[Yy](es)?$ ]]; then
     echo "Uninstallation cancelled."
     exit 0
 fi
