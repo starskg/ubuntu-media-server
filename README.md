@@ -1,6 +1,7 @@
-# Ubuntu-Based High-Performance Media Streaming Server
-
 **Transforming a standard Ubuntu server into a Dedicated RTMP to HLS/SRT Gateway**
+
+> [!CAUTION]
+> **THIS IS NOT PRODUCTION SAFE.** This project is intended for **home-labs, development, and personal projects**. It lacks advanced features like auto-scaling, high-availability clusters, enterprise-grade firewalls, and rigorous security hardening necessary for large-scale production environments.
 
 > 🤖 **Looking for the Android/Termux version?** → [android-media-server](https://github.com/starskg/android-media-server)
 
@@ -11,6 +12,16 @@
 This project sets up a robust, 24/7 streaming media server on **Ubuntu 20.04+** (or Debian 11+). It establishes a pipeline that ingests RTMP streams (e.g., from OBS Studio) and transmuxes them into HLS or SRT formats for delivery.
 
 The setup uses **Nginx** as a reverse proxy with CORS support and **MistServer** as the core media engine — both managed as native **systemd** services.
+
+---
+
+## 💡 Real-World Use Cases
+
+Nima uchun bu loyihani ishlatish kerak? Mana bir nechta amaliy misollar:
+
+1.  **IPTV Proxy & Relay:** Tashqi IPTV oqimlarini o'zingizning lokal tarmog'ingizda transmuxing qilib, turli qurilmalarga (Smart TV, Mobile) HLS formatida tarqatish.
+2.  **OBS Gateway:** Kompyuteringizdan (OBS) telefoningizga RTMP stream yuborish va telefoningizni "global gateway" sifatida ishlatib, streamni bir vaqtning o'zida bir nechta CDN'larga yoki veb-pleyerlarga uzatish.
+3.  **Home Media CDN:** Uy sharoitidagi videolarni yoki jonli efirlarni lokal tarmoq ichida (yoki port forwarding orqali tashqarida) past kechikish (low-latency) bilan ko'rish uchun HLS/SRT nuqtasini yaratish.
 
 ---
 
@@ -52,6 +63,25 @@ Check official docs: [mistserver.org](https://mistserver.org).
 | **Service Manager** | systemd | Auto-start, crash recovery |
 | **Remote Access** | OpenSSH | SSH on port 22 |
 | **Optional** | File Browser | Web-based file manager |
+
+---
+
+## 🔒 Security Best Practices
+
+> [!IMPORTANT]
+> **XAVFSIZLIKNI UNUTMANG!** Default sozlamalar bilan ochiq internetga chiqish xavfli bo'lishi mumkin.
+
+1.  **Ubuntu Paroli:** Tizimga kirish parolingiz yetarlicha murakkab ekanligiga ishonch hosil qiling. Agar iloji bo'lsa, SSH Key orqali kirishni sozlang.
+2.  **MistServer Admin:** MistServer birinchi marta ishga tushganda, albatta admin panelga kirib (`http://IP:4242`), foydalanuvchi nomi va murakkab parol o'rnating.
+3.  **Whitelist:** Nginx whitelist faylida (`/etc/nginx/streaming-whitelist`) faqat o'zingiz bilgan domenlarni qoldiring. `~.* 1;` (hammaga ruxsat) sozlamasini ishlatmang.
+4.  **UFW Firewall:** Ubuntu'da faqat kerakli portlarni ochiq qoldiring:
+    ```bash
+    sudo ufw allow 22/tcp
+    sudo ufw allow 1935/tcp
+    sudo ufw allow 8080/tcp
+    sudo ufw allow 4242/tcp
+    sudo ufw enable
+    ```
 
 ---
 
