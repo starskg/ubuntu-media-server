@@ -33,7 +33,7 @@ echo "  • Optionally remove packages"
 echo "  • Restore backups (if available)"
 echo
 
-read -p "Are you sure you want to continue? (y/n): " confirm
+read -p "Are you sure you want to continue? (y/n): " confirm < /dev/tty
 
 if [[ ! "$confirm" =~ ^[Yy](es)?$ ]]; then
     echo "Uninstallation cancelled."
@@ -58,7 +58,7 @@ if [ -n "$backups" ]; then
     echo "Found backups:"
     echo "$backups" | nl
     echo
-    read -p "Restore from backup? (y/n): " restore
+    read -p "Restore from backup? (y/n): " restore < /dev/tty
 
     if [ "$restore" = "y" ]; then
         latest_backup=$(echo "$backups" | tail -1)
@@ -85,7 +85,7 @@ echo
 # Ask about packages
 echo -e "${YELLOW}Remove installed packages?${NC}"
 echo "This will remove: nginx, filebrowser"
-read -p "Continue? (y/n): " remove_pkgs
+read -p "Continue? (y/n): " remove_pkgs < /dev/tty
 
 if [ "$remove_pkgs" = "y" ]; then
     echo -e "${BLUE}Removing packages...${NC}"
@@ -97,7 +97,7 @@ fi
 echo
 
 # Ask about MistServer
-read -p "Remove MistServer binaries? (y/n): " remove_mist
+read -p "Remove MistServer binaries? (y/n): " remove_mist < /dev/tty
 if [ "$remove_mist" = "y" ]; then
     rm -f /usr/bin/MistController /usr/bin/MistSRT /usr/bin/Mist* 2>/dev/null
     rm -f /etc/systemd/system/mistserver.service 2>/dev/null
@@ -108,7 +108,7 @@ fi
 echo
 
 # Clean up logs
-read -p "Remove installation logs? (y/n): " remove_logs
+read -p "Remove installation logs? (y/n): " remove_logs < /dev/tty
 if [ "$remove_logs" = "y" ]; then
     rm -f ~/install_*.log ~/quick_install_*.log 2>/dev/null
     echo "✓ Logs removed"
