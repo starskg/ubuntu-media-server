@@ -2,6 +2,8 @@
 
 **Transforming a standard Ubuntu server into a Dedicated RTMP to HLS/SRT Gateway**
 
+> 🤖 **Looking for the Android/Termux version?** → [android-media-server](https://github.com/starskg/android-media-server)
+
 ---
 
 ## 📖 Overview
@@ -546,3 +548,12 @@ This setup is intended for personal/educational use. Ensure compliance with your
 - [ ] Automated SSL/TLS setup (Let's Encrypt)
 - [ ] Multi-language documentation
 - [ ] Automated backup system
+
+---
+
+## 🔗 Related Projects
+
+| Project | Platform | Description |
+|---------|----------|-------------|
+| **[android-media-server](https://github.com/starskg/android-media-server)** | 🤖 Android (Termux) | Termux/proot based setup for Android devices |
+| **[ubuntu-media-server](https://github.com/starskg/ubuntu-media-server)** | 🖥️ Ubuntu / Debian | This project — Native systemd-based setup for Linux servers |
