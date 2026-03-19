@@ -17,11 +17,11 @@ The setup uses **Nginx** as a reverse proxy with CORS support and **MistServer**
 
 ## 💡 Real-World Use Cases
 
-Nima uchun bu loyihani ishlatish kerak? Mana bir nechta amaliy misollar:
+Why should you use this project? Here are some practical examples:
 
-1.  **IPTV Proxy & Relay:** Tashqi IPTV oqimlarini o'zingizning lokal tarmog'ingizda transmuxing qilib, turli qurilmalarga (Smart TV, Mobile) HLS formatida tarqatish.
-2.  **OBS Gateway:** Kompyuteringizdan (OBS) telefoningizga RTMP stream yuborish va telefoningizni "global gateway" sifatida ishlatib, streamni bir vaqtning o'zida bir nechta CDN'larga yoki veb-pleyerlarga uzatish.
-3.  **Home Media CDN:** Uy sharoitidagi videolarni yoki jonli efirlarni lokal tarmoq ichida (yoki port forwarding orqali tashqarida) past kechikish (low-latency) bilan ko'rish uchun HLS/SRT nuqtasini yaratish.
+1.  **IPTV Proxy & Relay:** Transmux external IPTV streams on your local network and distribute them to various devices (Smart TV, Mobile) in HLS format.
+2.  **OBS Gateway:** Send an RTMP stream from your computer (OBS Studio) to your server and use your setup as a "global gateway" to relay the stream to multiple CDNs or web players simultaneously.
+3.  **Home Media CDN:** Create an HLS/SRT endpoint to view home videos or live broadcasts with low-latency within the local network (or externally via port forwarding).
 
 ---
 
@@ -69,12 +69,12 @@ Check official docs: [mistserver.org](https://mistserver.org).
 ## 🔒 Security Best Practices
 
 > [!IMPORTANT]
-> **XAVFSIZLIKNI UNUTMANG!** Default sozlamalar bilan ochiq internetga chiqish xavfli bo'lishi mumkin.
+> **NEVER IGNORE SECURITY!** Exposing your server to the open internet with default or weak credentials is high risk.
 
-1.  **Ubuntu Paroli:** Tizimga kirish parolingiz yetarlicha murakkab ekanligiga ishonch hosil qiling. Agar iloji bo'lsa, SSH Key orqali kirishni sozlang.
-2.  **MistServer Admin:** MistServer birinchi marta ishga tushganda, albatta admin panelga kirib (`http://IP:4242`), foydalanuvchi nomi va murakkab parol o'rnating.
-3.  **Whitelist:** Nginx whitelist faylida (`/etc/nginx/streaming-whitelist`) faqat o'zingiz bilgan domenlarni qoldiring. `~.* 1;` (hammaga ruxsat) sozlamasini ishlatmang.
-4.  **UFW Firewall:** Ubuntu'da faqat kerakli portlarni ochiq qoldiring:
+1.  **Ubuntu Password:** Ensure your system user password is sufficiently complex. Preferably, configure SSH Key-based authentication for remote access.
+2.  **MistServer Admin:** Immediately after installation, access the MistServer admin panel (`http://IP:4242`) to set a unique username and a complex password.
+3.  **Whitelist Management:** Keep only trusted domains in your Nginx whitelist (`/etc/nginx/streaming-whitelist`). Avoid using the catch-all `~.* 1;` rule.
+4.  **UFW Firewall:** Enable UFW and allow only the necessary ports:
     ```bash
     sudo ufw allow 22/tcp
     sudo ufw allow 1935/tcp
