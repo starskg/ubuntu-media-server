@@ -1,31 +1,19 @@
-# Wake Lock (prevents CPU from sleeping)
-termux-wake-lock
+# Ubuntu Media Streaming Server - Shell Aliases & Helpers
+# Add this to your ~/.bashrc by running:
+#   cat scripts/bashrc >> ~/.bashrc && source ~/.bashrc
 
-# SSH Server
-if ! pgrep -x "sshd" > /dev/null; then
-    sshd
-    echo "SSH Server started."
-fi
+# Quick status check
+alias check-status='bash ~/ubuntu-media-server/check-status.sh'
 
-# Nginx
-if ! pgrep -x "nginx" > /dev/null; then
-    nginx
-    echo "Nginx Proxy started."
-fi
+# Nginx shortcuts
+alias nr='sudo nginx -s reload'
+alias nginx-status='systemctl status nginx'
+alias nginx-log='sudo journalctl -u nginx -f'
 
-# Port Forwarding is used for external access (see README for router setup)
+# MistServer shortcuts
+alias mist-status='systemctl status mistserver'
+alias mist-log='sudo journalctl -u mistserver -f'
+alias mist-restart='sudo systemctl restart mistserver'
 
-# MistServer (via start_mist.sh)
-if ! pgrep -f "MistController" > /dev/null; then
-    ~/start_mist.sh > /dev/null 2>&1 &
-    echo "Mist script started."
-fi
-
-# File Browser (via tmux)
-if ! pgrep -f "filebrowser" > /dev/null; then
-    tmux new-session -d -s fb_session 'proot-distro login ubuntu -- filebrowser -d /root/filebrowser.db -p 9999 -a 0.0.0.0'
-    echo "File Browser started."
-fi
-
-# Short commands (Aliases)
-alias nr='nginx -s reload'
+# Show server IP and access URLs
+alias server-info='echo "IP: $(hostname -I | awk '"'"'{print $1}'"'"')" && echo "Nginx:      http://$(hostname -I | awk '"'"'{print $1}'"'"'):8080" && echo "MistServer: http://$(hostname -I | awk '"'"'{print $1}'"'"'):4242"'

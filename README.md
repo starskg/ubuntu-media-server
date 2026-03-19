@@ -1,40 +1,39 @@
-# Android-Based High-Performance Media Streaming Server
+# Ubuntu-Based High-Performance Media Streaming Server
 
-**Transforming a Redmi Note 10S into a Dedicated RTMP to HLS/SRT Gateway**
+**Transforming a standard Ubuntu server into a Dedicated RTMP to HLS/SRT Gateway**
 
 ---
 
 ## 📖 Overview
 
-This project demonstrates the engineering capability of repurposing consumer mobile hardware into a robust, 24/7 streaming media server. Using a **Redmi Note 10S** (MediaTek Helio G95, 6GB RAM), we establish a pipeline that ingests RTMP streams (e.g., from OBS Studio) and transmuxes them into HLS or SRT formats for global delivery.
+This project sets up a robust, 24/7 streaming media server on **Ubuntu 20.04+** (or Debian 11+). It establishes a pipeline that ingests RTMP streams (e.g., from OBS Studio) and transmuxes them into HLS or SRT formats for delivery.
 
-The setup utilizes **Termux** as the host environment for Nginx and SSH, while deploying **MistServer** within an isolated **PRoot Ubuntu** container for maximum stability and performance.
+The setup uses **Nginx** as a reverse proxy with CORS support and **MistServer** as the core media engine — both managed as native **systemd** services.
 
 ### Key Features
 
-- ✅ **Zero Transcoding Load**: Efficient remuxing results in near 0% CPU usage on the host device
-- ✅ **Custom CORS Handling**: Nginx is configured as a reverse proxy to solve complex cross-origin issues for web players
-- ✅ **Persistence**: Optimized against Android's aggressive background process killing
-- ✅ **Remote Management**: Full PC-to-Phone control via SSH
+- ✅ **Zero Transcoding Load**: Efficient remuxing results in near 0% CPU usage
+- ✅ **Custom CORS Handling**: Nginx configured as a reverse proxy for web player compatibility
+- ✅ **systemd Integration**: Auto-start on boot with crash recovery
+- ✅ **Remote Management**: SSH access (port 22)
 - ✅ **Whitelist Security**: Domain-based access control for proxy endpoints
 - ✅ **Direct Port Forwarding**: Full UDP/TCP support via router port forwarding (no tunnel restrictions)
-- ✅ **Web File Manager**: Built-in file browser on port 9999
+- ✅ **Web File Manager**: Optional built-in file browser on port 9999
 - ✅ **Automated Installation**: One-command setup with interactive configuration
+- ✅ **Multi-Architecture**: Supports both x86_64 and ARM64
 
 ---
 
 ## 🏗️ Architecture Stack
 
-The system is layered as follows:
-
 | Layer | Component | Role |
 |-------|-----------|------|
-| **Hardware** | Redmi Note 10S | The physical host device |
-| **Host OS (Android)** | Termux | Provides the Linux environment and native package management |
-| **Host Services** | Nginx & OpenSSH | Nginx handles HTTP reverse proxying; SSH provides remote access |
-| **Container** | PRoot Distro (Ubuntu) | Creates an isolated Linux filesystem for the media engine |
-| **Media Engine** | MistServer (ARMv8) | The core server handling ingest (RTMP) and egress (HLS/SRT) |
-| **Optional Services** | File Browser | Web-based file management |
+| **OS** | Ubuntu 20.04+ / Debian 11+ | Host operating system |
+| **Proxy** | Nginx | HTTP reverse proxy, CORS, whitelist |
+| **Media Engine** | MistServer | RTMP ingest → HLS/SRT egress |
+| **Service Manager** | systemd | Auto-start, crash recovery |
+| **Remote Access** | OpenSSH | SSH on port 22 |
+| **Optional** | File Browser | Web-based file manager |
 
 ---
 
@@ -42,65 +41,56 @@ The system is layered as follows:
 
 ### One-Command Install
 
-The easiest way to get started. Just run one command and follow the prompts:
-
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/install.sh | sudo bash
 ```
 
 **Or download first, then run:**
 
 ```bash
 # Download the installer
-curl -O https://raw.githubusercontent.com/starskg/android-media-server/main/install.sh
+curl -O https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/install.sh
 
 # Make it executable
 chmod +x install.sh
 
 # Run the installer
-./install.sh
+sudo bash install.sh
 ```
 
 ### What the Installer Does
 
 1. ✅ **Updates packages** and installs required software
-2. ✅ **Asks for SSH password** (for remote access)
+2. ✅ **Installs MistServer** (auto-detects x86_64 or ARM64)
 3. ✅ **Configures Nginx** reverse proxy with CORS support
-4. ✅ **Sets up PRoot Ubuntu** container
-5. ✅ **Installs MistServer** for streaming
-6. ✅ **Asks for whitelist domains** (which sites to allow)
-7. ✅ **Optional:** File Browser for web-based file management
-8. ✅ **Creates auto-start** configuration
-9. ✅ **Backs up** existing configurations
+4. ✅ **Asks for whitelist domains** (which sites to allow)
+5. ✅ **Enables systemd** services for auto-start on boot
+6. ✅ **Optional:** File Browser for web-based file management
+7. ✅ **Creates auto-start** configuration
+8. ✅ **Backs up** existing configurations
 
 ### Installation Process
 
-**Step 1:** Open Termux on your Android device
+**Step 1:** Connect to your Ubuntu server via SSH
 
 **Step 2:** Run the installation command:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/install.sh | bash
+sudo bash install.sh
 ```
 
 **Step 3:** Follow the interactive prompts:
 
 ```
-Welcome to the Android Streaming Server installer!
+Welcome to the Ubuntu Media Streaming Server installer!
 ...
 Do you want to continue? [Y/n]: y
 
-Creating backup...
 Installing base packages...
 ✓ Base packages installed successfully
 
-Please set a password for SSH access:
-[Enter your password]
-
-Installing PRoot and Ubuntu container...
-✓ PRoot Ubuntu installed successfully
-
 Installing MistServer...
-✓ MistServer installed successfully
+Detected x86_64 architecture
+✓ MistServer installed and started
 
 Configuring Nginx proxy...
 
@@ -117,17 +107,10 @@ Optional: Install File Browser?
 (Web-based file manager on port 9999)
 Install File Browser [y/N]: y
 
-✓ File Browser installed
+✓ File Browser installed and started on port 9999
 ```
 
-**Step 4:** Wait for completion (5-10 minutes)
-
-**Step 5:** Configure Android battery settings:
-- Go to **Settings** → **Apps** → **Termux**
-- Set **Battery Saver** to **"No restrictions"**
-- Enable **Autostart** (if available in your ROM)
-
-**Step 6:** Restart Termux to activate auto-start
+**Step 4:** Wait for completion (2-5 minutes)
 
 ### Post-Installation
 
@@ -138,51 +121,47 @@ After installation completes, you'll see:
            Installation completed successfully!
 ════════════════════════════════════════════════════════════
 
-📡 SSH Access:
-   ssh -p 8022 u0_a235@192.168.1.100
+🔒 SSH Access:
+   ssh root@203.0.113.10  (port 22)
 
 🌐 Nginx Proxy:
-   http://192.168.1.100:8080
+   http://203.0.113.10:8080
 
 🎬 MistServer Admin:
-   http://192.168.1.100:4242
+   http://203.0.113.10:4242
 
 📋 Proxy URL Format:
    http://YOUR_IP:8080/live/TARGET_HOST/PATH
    Example: http://YOUR_IP:8080/live/localhost:8888/hls/stream.m3u8
 
-📂 Backup Location:
-   /data/data/com.termux/files/home/streaming_server_backup_20240203_143022
-
-📝 Installation Log:
-   /data/data/com.termux/files/home/install_20240203_143022.log
+📡 Port Forwarding (configure on your router):
+   TCP 1935  → RTMP Ingest (OBS Studio)
+   TCP 4242  → MistServer Admin Panel
+   TCP 8080  → Nginx Proxy (HLS playback)
+   TCP 22    → SSH Remote Access
+   UDP 8889  → SRT low-latency stream (optional)
+   TCP 9999  → File Browser (if installed)
 ```
 
 ---
 
 ## ⚡ Alternative: Fully Automated Install
 
-For advanced users who want zero interaction:
+For servers without interaction:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/quick-install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/quick-install.sh | sudo bash
 ```
 
 **Default settings:**
-- Password: `Tmux2026` ⚠️ **Change immediately!**
 - Whitelist: `localhost:8888` only
 - No optional components
-
-**After install, change the password:**
-```bash
-passwd
-```
 
 ---
 
 ## 🌐 Networking & Port Forwarding
 
-For external access, configure your router to forward traffic to the phone's static local IP.
+For external access, configure your router to forward traffic to the server's static local IP.
 
 | Protocol | Port | Service | Description |
 |----------|------|---------|-------------|
@@ -190,9 +169,9 @@ For external access, configure your router to forward traffic to the phone's sta
 | TCP | 4242 | MistServer API | Web administration panel access |
 | TCP | 8080 | Nginx Proxy | Main proxy endpoint for HLS/SRT playback |
 | TCP | 8888 | HTTP/HLS Egress | Direct MistServer port (internal) |
-| UDP | 8889 | SRT (Optional) | For low-latency SRT streams if configured |
+| UDP | 8889 | SRT | For low-latency SRT streams |
 | TCP | 9999 | File Browser | Web-based file management interface |
-| TCP | 8022 | SSH | Remote terminal access |
+| TCP | 22   | SSH | Remote terminal access |
 
 ---
 
@@ -200,23 +179,21 @@ For external access, configure your router to forward traffic to the phone's sta
 
 ### URL Format
 
-To access streams through the proxy, use:
-
 ```
-http://YOUR_PHONE_IP:8080/live/TARGET_HOST/PATH
+http://YOUR_SERVER_IP:8080/live/TARGET_HOST/PATH
 ```
 
 ### Examples
 
 ```bash
 # Access MistServer on localhost
-http://192.168.1.100:8080/live/localhost:8888/hls/stream.m3u8
+http://203.0.113.10:8080/live/localhost:8888/hls/stream.m3u8
 
 # Access external stream server
-http://192.168.1.100:8080/live/stream.example.com:8080/live/channel1.m3u8
+http://203.0.113.10:8080/live/stream.example.com:8080/live/channel1.m3u8
 
 # With full HTTP URL (auto-extracted)
-http://192.168.1.100:8080/live/http://cdn.example.com/stream/playlist.m3u8
+http://203.0.113.10:8080/live/http://cdn.example.com/stream/playlist.m3u8
 ```
 
 ### Managing Whitelist
@@ -224,7 +201,7 @@ http://192.168.1.100:8080/live/http://cdn.example.com/stream/playlist.m3u8
 Edit allowed domains:
 
 ```bash
-nano $PREFIX/etc/nginx/websites
+sudo nano /etc/nginx/streaming-whitelist
 ```
 
 Add domains:
@@ -236,7 +213,7 @@ localhost:8888       1;
 
 Reload Nginx:
 ```bash
-nginx -s reload
+sudo nginx -s reload
 ```
 
 > ⚠️ **Security:** Only whitelist trusted domains to prevent your server from becoming an open proxy.
@@ -249,10 +226,10 @@ nginx -s reload
 
 ```bash
 # Download and run status checker
-curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/check-status.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/check-status.sh | sudo bash
 ```
 
-Or use the built-in alias:
+Or use the alias (after adding scripts/bashrc to your ~/.bashrc):
 ```bash
 check-status
 ```
@@ -260,18 +237,24 @@ check-status
 ### Manual Control
 
 ```bash
-# Restart Nginx
-nr                      # (alias for 'nginx -s reload')
+# Nginx
+sudo systemctl start nginx
+sudo systemctl stop nginx
+sudo systemctl restart nginx
+sudo nginx -s reload          # Reload config without restart
 
-# Start services manually
-sshd                    # SSH
-nginx                   # Nginx
-~/start_mist.sh         # MistServer
+# MistServer
+sudo systemctl start mistserver
+sudo systemctl stop mistserver
+sudo systemctl restart mistserver
 
-# Stop services
-pkill sshd              # Stop SSH
-nginx -s stop           # Stop Nginx
-pkill -f MistController # Stop MistServer
+# File Browser
+sudo systemctl start filebrowser
+sudo systemctl stop filebrowser
+
+# View logs
+sudo journalctl -u nginx -f
+sudo journalctl -u mistserver -f
 ```
 
 ---
@@ -281,7 +264,7 @@ pkill -f MistController # Stop MistServer
 If you installed File Browser, access it at:
 
 ```
-http://YOUR_PHONE_IP:9999
+http://YOUR_SERVER_IP:9999
 ```
 
 **Default credentials:**
@@ -290,8 +273,7 @@ http://YOUR_PHONE_IP:9999
 
 **Change password:**
 ```bash
-proot-distro login ubuntu
-filebrowser users update admin --password NEW_PASSWORD
+filebrowser users update admin --password NEW_PASSWORD -d /root/filebrowser.db
 ```
 
 ---
@@ -302,46 +284,45 @@ filebrowser users update admin --password NEW_PASSWORD
 
 Check status:
 ```bash
-check-status
+sudo systemctl status nginx
+sudo systemctl status mistserver
 ```
 
 Restart manually:
 ```bash
-sshd
-nginx
-~/start_mist.sh
+sudo systemctl restart nginx
+sudo systemctl restart mistserver
 ```
 
 ### 403 Forbidden errors
 
-Domain not whitelisted. Add to `/data/data/com.termux/files/usr/etc/nginx/websites`:
+Domain not whitelisted. Add to `/etc/nginx/streaming-whitelist`:
 ```bash
-nano $PREFIX/etc/nginx/websites
+sudo nano /etc/nginx/streaming-whitelist
 # Add: yourdomain.com 1;
-nginx -s reload
+sudo nginx -s reload
 ```
 
-### Services stop after screen lock
+### Nginx config test
 
-1. Enable wake lock (already in .bashrc):
-   ```bash
-   termux-wake-lock
-   ```
-
-2. Android settings:
-   - **Settings** → **Apps** → **Termux** → **Battery Saver** → **No restrictions**
-   - Enable **Autostart** if available
-
-### SSH connection refused
-
-Start SSH:
 ```bash
-sshd
+sudo nginx -t
 ```
 
-Check port:
+### View live logs
+
 ```bash
-ssh -p 8022 $(whoami)@localhost
+# Nginx errors
+sudo journalctl -u nginx -f
+
+# MistServer logs
+sudo journalctl -u mistserver -f
+```
+
+### Check which ports are open
+
+```bash
+sudo ss -tlnp | grep -E '1935|4242|8080|8889|9999|22'
 ```
 
 ---
@@ -349,22 +330,20 @@ ssh -p 8022 $(whoami)@localhost
 ## 🗑️ Uninstallation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/starskg/ubuntu-media-server/main/uninstall.sh | sudo bash
 ```
 
 The uninstaller will:
-- Stop all services
+- Stop and disable all services
 - Restore backups
 - Optionally remove packages
 - Clean up files
 
 ---
 
-## 📊 Performance Proof
+## 📊 Performance
 
-MistServer running efficiently on the Redmi Note 10S while handling active streams. Note the incredibly low CPU utilization due to direct transmuxing (no transcoding).
-
-![Server Stats Screenshot](assets/Screenshot.png)
+MistServer uses direct transmuxing (RTMP → HLS/SRT) with **no transcoding**, resulting in near-zero CPU load regardless of the number of viewers.
 
 ---
 
@@ -373,57 +352,36 @@ MistServer running efficiently on the Redmi Note 10S while handling active strea
 <details>
 <summary><b>Click here for detailed manual installation steps</b></summary>
 
-If you prefer to install everything manually or need to troubleshoot, follow these detailed steps.
-
 ---
 
-### Step 1: Initial Access & SSH Setup
-
-Setup remote access from a PC for easier configuration. On the Android device via Termux:
+### Step 1: System Update
 
 ```bash
-# Update local packages
-pkg update && pkg upgrade -y
-
-# Install OpenSSH
-pkg install openssh
-
-# Set a password for the Termux user
-passwd
-
-# Start the SSH daemon
-sshd
-```
-
-Now, connect from your PC (replace IP with your phone's local IP):
-
-```bash
-ssh -p 8022 u0_a235@192.168.x.xxx
-# Note: Your username can be found using the 'whoami' command in Termux.
+sudo apt update && sudo apt upgrade -y
 ```
 
 ---
 
-### Step 2: Host Environment Setup (Nginx)
-
-Install Nginx natively in Termux to act as the front-end proxy and handle CORS.
+### Step 2: Install Nginx
 
 ```bash
-pkg install nginx
+sudo apt install -y nginx curl tmux
+sudo systemctl enable nginx
+sudo systemctl start nginx
 ```
 
 **Edit the main Nginx configuration:**
 
 ```bash
-nano $PREFIX/etc/nginx/nginx.conf
+sudo nano /etc/nginx/nginx.conf
 ```
 
 **Paste the full configuration** (see [config/nginx/nginx.conf](config/nginx/nginx.conf) in this repository)
 
-**Create the websites whitelist:**
+**Create the streaming whitelist:**
 
 ```bash
-nano $PREFIX/etc/nginx/websites
+sudo nano /etc/nginx/streaming-whitelist
 ```
 
 ```nginx
@@ -432,115 +390,34 @@ nano $PREFIX/etc/nginx/websites
 localhost:8888   1;
 ```
 
-**Start Nginx:**
+**Reload Nginx:**
 
 ```bash
-nginx
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ---
 
-### Step 3: Container Environment (PRoot Ubuntu)
-
-Set up the isolated Ubuntu environment where MistServer will run.
+### Step 3: Install MistServer
 
 ```bash
-# Install PRoot Distro
-pkg install proot-distro
+# For x86_64:
+curl -o - https://releases.mistserver.org/is/mistserver_64V3.10.tar.gz 2>/dev/null | sudo sh
 
-# Install Ubuntu
-proot-distro install ubuntu
+# For ARM64:
+curl -o - https://releases.mistserver.org/is/mistserver_aarch64V3.10.tar.gz 2>/dev/null | sudo sh
 
-# Login to the Ubuntu container
-proot-distro login ubuntu
+# Enable and start
+sudo systemctl enable mistserver
+sudo systemctl start mistserver
 ```
 
 ---
 
-### Step 4: MistServer Deployment
-
-Inside the PRoot Ubuntu shell, install the ARM64 version of MistServer.
+### Step 4: Add Shell Aliases (Optional)
 
 ```bash
-# Install dependencies
-apt update && apt install curl -y
-
-# Download and install MistServer (ARMv8 64-bit)
-curl -o - https://releases.mistserver.org/is/mistserver_aarch64V3.10.tar.gz 2>/dev/null | sh
-
-# Exit Ubuntu
-exit
-```
-
----
-
-### Step 5: Auto-Start Configuration
-
-**Create the MistServer startup script:**
-
-```bash
-nano ~/start_mist.sh
-```
-
-```bash
-#!/data/data/com.termux/files/usr/bin/sh
-
-# Check if MistController is already running
-if pgrep -f "MistController" > /dev/null; then
-    echo "MistServer is already running."
-    exit 0
-fi
-
-# Start MistServer
-nohup proot-distro login ubuntu -- MistController > /dev/null 2>&1 &
-
-echo "MistServer started inside Ubuntu (proot)!"
-```
-
-**Make it executable:**
-
-```bash
-chmod +x ~/start_mist.sh
-```
-
-**Edit bashrc for auto-start:**
-
-```bash
-nano ~/.bashrc
-```
-
-**Add to the end:**
-
-```bash
-# Wake Lock (prevents CPU from sleeping)
-termux-wake-lock
-
-# SSH Server
-if ! pgrep -x "sshd" > /dev/null; then
-    sshd
-    echo "SSH Server started."
-fi
-
-# Nginx
-if ! pgrep -x "nginx" > /dev/null; then
-    nginx
-    echo "Nginx Proxy started."
-fi
-
-# MistServer (via start_mist.sh)
-if ! pgrep -f "MistController" > /dev/null; then
-    ~/start_mist.sh > /dev/null 2>&1 &
-    echo "MistServer startup script executed."
-fi
-
-# Short commands (Aliases)
-alias nr='nginx -s reload'
-alias check-status='echo "=== Services ===" && pgrep -x sshd > /dev/null && echo "SSH: Running" || echo "SSH: Stopped" && pgrep -x nginx > /dev/null && echo "Nginx: Running" || echo "Nginx: Stopped" && pgrep -f MistController > /dev/null && echo "MistServer: Running" || echo "MistServer: Stopped"'
-```
-
-**Reload bashrc:**
-
-```bash
+cat scripts/bashrc >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -549,21 +426,32 @@ source ~/.bashrc
 ### Optional: Install File Browser
 
 ```bash
-pkg install tmux
-
-# Install in Ubuntu
-proot-distro login ubuntu
-curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
-exit
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | sudo bash
 ```
 
-Add to `.bashrc`:
+Create systemd service:
 ```bash
-# File Browser (via tmux)
-if ! pgrep -f "filebrowser" > /dev/null; then
-    tmux new-session -d -s fb_session 'proot-distro login ubuntu -- filebrowser -d /root/filebrowser.db -p 9999 -a 0.0.0.0'
-    echo "File Browser started on port 9999."
-fi
+sudo nano /etc/systemd/system/filebrowser.service
+```
+
+```ini
+[Unit]
+Description=File Browser
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/filebrowser -d /root/filebrowser.db -p 9999 -a 0.0.0.0
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable filebrowser
+sudo systemctl start filebrowser
 ```
 
 ---
@@ -583,12 +471,9 @@ fi
 ├── config/
 │   └── nginx/
 │       ├── nginx.conf          # Main Nginx configuration
-│       └── websites            # Whitelist file
+│       └── websites            # Whitelist file template
 ├── scripts/
-│   ├── .bashrc                 # Auto-start configuration
-│   └── start_mist.sh           # MistServer startup script
-├── assets/
-│   └── performance-screenshot.png
+│   └── bashrc                  # Shell aliases and helpers
 └── README.md
 ```
 
@@ -626,7 +511,6 @@ For questions or collaboration:
 ## 🙏 Acknowledgments
 
 - **MistServer** - Efficient media streaming engine
-- **Termux** - Android terminal emulator
 - **Nginx** - High-performance web server
 - **PRoot** - User-space implementation of chroot
 
@@ -644,28 +528,21 @@ This setup is intended for personal/educational use. Ensure compliance with your
 
 ## 📝 Version History
 
-- **v1.0.0** (2026-02-03)
-  - Initial release
-  - One-command automated installation
-  - Interactive configuration prompts
-  - Auto-start and persistence features
-  - Direct port forwarding support (full UDP/TCP)
-  - Optional File Browser
-  - Comprehensive troubleshooting guide
-
-- **v1.1.0** (2026-03-19)
-  - Removed Cloudflare Tunnel dependency (free tier blocks UDP/SRT)
-  - Switched to direct router port forwarding for full UDP support
-  - Updated default password policy
+- **v1.0.0** (2026-03-19)
+  - Initial release based on android-media-server
+  - Ubuntu/Debian adaptation (systemd, apt, native MistServer)
+  - Multi-architecture support (x86_64 + ARM64)
+  - Direct port forwarding (full UDP/TCP support)
+  - Optional File Browser via systemd
 
 ---
 
 ## 🗺️ Roadmap
 
 - [ ] Web-based installation UI
-- [ ] Docker support for easier deployment
+- [ ] Docker Compose support
 - [ ] Stream recording automation
 - [ ] Grafana monitoring dashboard
-- [ ] Mobile app for server management
+- [ ] Automated SSL/TLS setup (Let's Encrypt)
 - [ ] Multi-language documentation
 - [ ] Automated backup system
