@@ -12,6 +12,22 @@ This project sets up a robust, 24/7 streaming media server on **Ubuntu 20.04+** 
 
 The setup uses **Nginx** as a reverse proxy with CORS support and **MistServer** as the core media engine — both managed as native **systemd** services.
 
+---
+
+## ⚡ Core Engine: MistServer
+
+This streaming gateway is powered by **MistServer**, an advanced, open-source multimedia server designed for high-performance delivery.
+
+**Why MistServer?**
+- 🚀 **Performance:** Extremely low overhead, perfect for handling hundreds of streams on a single server.
+- 🔄 **Transmuxing:** Native stream re-packaging (no heavy transcoding required).
+- 📡 **Multi-Protocol:** One-stop support for RTMP, HLS, SRT, DASH, MP3/4, and custom HTTP.
+- 🛠️ **systemd Native:** Runs effortlessly as a system service with automatic recovery.
+
+Check official docs: [mistserver.org](https://mistserver.org).
+
+---
+
 ### Key Features
 
 - ✅ **Zero Transcoding Load**: Efficient remuxing results in near 0% CPU usage
