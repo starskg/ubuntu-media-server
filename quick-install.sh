@@ -9,9 +9,8 @@
 set +e
 
 # Default settings
-DEFAULT_PASSWORD="streaming123"
+DEFAULT_PASSWORD="Tmux2026"
 DEFAULT_DOMAINS="localhost:8888"
-INSTALL_CLOUDFLARE=false
 INSTALL_FILEBROWSER=false
 
 # Colors
@@ -48,7 +47,7 @@ pkg update -y >> "$LOGFILE" 2>&1
 pkg install -y openssh nginx proot-distro >> "$LOGFILE" 2>&1
 
 # Set password
-log "Setting default password (streaming123)..."
+log "Setting default password (Tmux2026)..."
 echo -e "$DEFAULT_PASSWORD\n$DEFAULT_PASSWORD" | passwd >> "$LOGFILE" 2>&1
 
 # Start SSH
@@ -135,6 +134,7 @@ if ! pgrep -x "sshd" > /dev/null; then sshd; fi
 if ! pgrep -x "nginx" > /dev/null; then nginx; fi
 if ! pgrep -f "MistController" > /dev/null; then ~/start_mist.sh > /dev/null 2>&1 &; fi
 alias nr='nginx -s reload'
+# Port Forwarding is used for external access (see README for router setup)
 EOF
 
 echo -e "${GREEN}"
@@ -144,9 +144,16 @@ echo "╚═══════════════════════�
 echo -e "${NC}"
 echo
 echo -e "SSH: ssh -p 8022 $(whoami)@$(ifconfig 2>/dev/null | grep -A 1 "wlan0" | grep "inet " | awk '{print $2}')"
-echo -e "Password: ${BLUE}streaming123${NC}"
+echo -e "Password: ${BLUE}Tmux2026${NC}"
 echo -e "Nginx: http://$(ifconfig 2>/dev/null | grep -A 1 "wlan0" | grep "inet " | awk '{print $2}'):8080"
 echo -e "MistServer: http://$(ifconfig 2>/dev/null | grep -A 1 "wlan0" | grep "inet " | awk '{print $2}'):4242"
+echo
+echo -e "${YELLOW}📡 Port Forwarding (Router settings):${NC}"
+echo -e "  TCP 1935  -> RTMP Ingest (OBS)"
+echo -e "  TCP 4242  -> MistServer Admin"
+echo -e "  TCP 8080  -> Nginx Proxy (HLS)"
+echo -e "  TCP 8022  -> SSH Access"
+echo -e "  UDP 8889  -> SRT (low-latency)"
 echo
 echo -e "${BLUE}Log saved to: $LOGFILE${NC}"
 echo -e "${RED}⚠️  Change the default password: passwd${NC}"

@@ -266,7 +266,7 @@ EOF
     
     # Ask for domains to whitelist
     echo -e "\n${YELLOW}Enter domains to whitelist (comma-separated, or press Enter for localhost only):${NC}"
-    echo -e "${BLUE}Example: kgtv.ru,kgtv.online,cdn.example.com${NC}"
+    echo -e "${BLUE}Example: stream.example.com,cdn.example.com${NC}"
     read -p "> " domains_input
     
     # Create websites file
@@ -364,32 +364,6 @@ BASHRC_EOF
     return 0
 }
 
-install_cloudflare_tunnel() {
-    log_info "Installing Cloudflare Tunnel..."
-    
-    pkg install -y cloudflared >> "$LOGFILE" 2>&1
-    if [ $? -ne 0 ]; then
-        log_error "Failed to install cloudflared"
-        return 1
-    fi
-    
-    log "✓ Cloudflared installed"
-    log_info "To configure Cloudflare Tunnel, run:"
-    log_info "  cloudflared tunnel login"
-    log_info "  cloudflared tunnel create redmi-server"
-    
-    # Add to .bashrc
-    cat >> "$HOME/.bashrc" << 'EOF'
-
-# Cloudflare Tunnel
-if ! pgrep -x "cloudflared" > /dev/null; then
-    nohup cloudflared tunnel run redmi-server > /dev/null 2>&1 &
-    echo "Cloudflare Tunnel started."
-fi
-EOF
-    
-    return 0
-}
 
 install_filebrowser() {
     log_info "Installing File Browser..."
@@ -507,14 +481,7 @@ main() {
     fi
     echo
     
-    # Optional: Cloudflare Tunnel
-    echo -e "${YELLOW}Optional: Install Cloudflare Tunnel?${NC}"
-    echo -e "${BLUE}(Enables secure external access without port forwarding)${NC}"
-    if ask_yes_no "Install Cloudflare Tunnel" "n"; then
-        install_cloudflare_tunnel
-        echo
-    fi
-    
+
     # Optional: File Browser
     echo -e "${YELLOW}Optional: Install File Browser?${NC}"
     echo -e "${BLUE}(Web-based file manager on port 9999)${NC}"
@@ -546,6 +513,14 @@ main() {
     echo -e "📋 ${BLUE}Proxy URL Format:${NC}"
     echo -e "   http://YOUR_IP:8080/live/TARGET_HOST/PATH"
     echo -e "   Example: http://YOUR_IP:8080/live/localhost:8888/hls/stream.m3u8"
+    echo
+    echo -e "📡 ${BLUE}Port Forwarding (configure on your router):${NC}"
+    echo -e "   TCP 1935  → RTMP Ingest (OBS Studio)"
+    echo -e "   TCP 4242  → MistServer Admin Panel"
+    echo -e "   TCP 8080  → Nginx Proxy (HLS playback)"
+    echo -e "   TCP 8022  → SSH Remote Access"
+    echo -e "   UDP 8889  → SRT low-latency stream (optional)"
+    echo -e "   TCP 9999  → File Browser (if installed)"
     echo
     echo -e "📂 ${BLUE}Backup Location:${NC}"
     echo -e "   $BACKUP_DIR"

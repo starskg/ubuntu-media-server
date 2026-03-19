@@ -13,11 +13,7 @@ if ! pgrep -x "nginx" > /dev/null; then
     echo "Nginx Proxy started."
 fi
 
-# Cloudflare Tunnel
-if ! pgrep -x "cloudflared" > /dev/null; then
-    nohup cloudflared tunnel run redmi-server > /dev/null 2>&1 &
-    echo "Cloudflare Tunnel started."
-fi
+# Port Forwarding is used for external access (see README for router setup)
 
 # MistServer (via start_mist.sh)
 if ! pgrep -f "MistController" > /dev/null; then

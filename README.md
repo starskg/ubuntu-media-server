@@ -17,7 +17,7 @@ The setup utilizes **Termux** as the host environment for Nginx and SSH, while d
 - ✅ **Persistence**: Optimized against Android's aggressive background process killing
 - ✅ **Remote Management**: Full PC-to-Phone control via SSH
 - ✅ **Whitelist Security**: Domain-based access control for proxy endpoints
-- ✅ **Cloudflare Tunnel**: Optional secure external access without port forwarding
+- ✅ **Direct Port Forwarding**: Full UDP/TCP support via router port forwarding (no tunnel restrictions)
 - ✅ **Web File Manager**: Built-in file browser on port 9999
 - ✅ **Automated Installation**: One-command setup with interactive configuration
 
@@ -34,7 +34,7 @@ The system is layered as follows:
 | **Host Services** | Nginx & OpenSSH | Nginx handles HTTP reverse proxying; SSH provides remote access |
 | **Container** | PRoot Distro (Ubuntu) | Creates an isolated Linux filesystem for the media engine |
 | **Media Engine** | MistServer (ARMv8) | The core server handling ingest (RTMP) and egress (HLS/SRT) |
-| **Optional Services** | Cloudflare Tunnel & File Browser | Secure tunneling and web-based file management |
+| **Optional Services** | File Browser | Web-based file management |
 
 ---
 
@@ -69,10 +69,9 @@ chmod +x install.sh
 4. ✅ **Sets up PRoot Ubuntu** container
 5. ✅ **Installs MistServer** for streaming
 6. ✅ **Asks for whitelist domains** (which sites to allow)
-7. ✅ **Optional:** Cloudflare Tunnel for secure external access
-8. ✅ **Optional:** File Browser for web-based file management
-9. ✅ **Creates auto-start** configuration
-10. ✅ **Backs up** existing configurations
+7. ✅ **Optional:** File Browser for web-based file management
+8. ✅ **Creates auto-start** configuration
+9. ✅ **Backs up** existing configurations
 
 ### Installation Process
 
@@ -106,17 +105,13 @@ Installing MistServer...
 Configuring Nginx proxy...
 
 Enter domains to whitelist (comma-separated, or press Enter for localhost only):
-Example: kgtv.ru,kgtv.online,cdn.example.com
-> kgtv.ru,localhost:8888
+Example: stream.example.com,cdn.example.com
+> stream.example.com,localhost:8888
 
 Allow ALL domains (not recommended for security)?
 Enable unrestricted proxy [y/N]: n
 
 ✓ Nginx configured and started
-
-Optional: Install Cloudflare Tunnel?
-(Enables secure external access without port forwarding)
-Install Cloudflare Tunnel [y/N]: n
 
 Optional: Install File Browser?
 (Web-based file manager on port 9999)
@@ -174,7 +169,7 @@ curl -fsSL https://raw.githubusercontent.com/starskg/android-media-server/main/q
 ```
 
 **Default settings:**
-- Password: `streaming123` ⚠️ **Change immediately!**
+- Password: `Tmux2026` ⚠️ **Change immediately!**
 - Whitelist: `localhost:8888` only
 - No optional components
 
@@ -217,11 +212,11 @@ http://YOUR_PHONE_IP:8080/live/TARGET_HOST/PATH
 # Access MistServer on localhost
 http://192.168.1.100:8080/live/localhost:8888/hls/stream.m3u8
 
-# Access external RTMP server
-http://192.168.1.100:8080/live/kgtv.ru:8080/live/channel1.m3u8
+# Access external stream server
+http://192.168.1.100:8080/live/stream.example.com:8080/live/channel1.m3u8
 
 # With full HTTP URL (auto-extracted)
-http://192.168.1.100:8080/live/http://kgtv.online/stream/playlist.m3u8
+http://192.168.1.100:8080/live/http://cdn.example.com/stream/playlist.m3u8
 ```
 
 ### Managing Whitelist
@@ -234,9 +229,9 @@ nano $PREFIX/etc/nginx/websites
 
 Add domains:
 ```nginx
-kgtv.ru          1;
-kgtv.online      1;
-localhost:8888   1;
+stream.example.com   1;
+cdn.example.com      1;
+localhost:8888       1;
 ```
 
 Reload Nginx:
@@ -277,41 +272,6 @@ nginx                   # Nginx
 pkill sshd              # Stop SSH
 nginx -s stop           # Stop Nginx
 pkill -f MistController # Stop MistServer
-```
-
----
-
-## 🔐 Optional: Cloudflare Tunnel
-
-If you installed Cloudflare Tunnel, configure it:
-
-```bash
-# Authenticate
-cloudflared tunnel login
-
-# Create tunnel
-cloudflared tunnel create redmi-server
-
-# Configure (edit ~/.cloudflared/config.yml)
-nano ~/.cloudflared/config.yml
-```
-
-Example config:
-```yaml
-tunnel: YOUR_TUNNEL_ID
-credentials-file: /data/data/com.termux/files/home/.cloudflared/YOUR_TUNNEL_ID.json
-
-ingress:
-  - hostname: stream.yourdomain.com
-    service: http://localhost:8080
-  - hostname: admin.yourdomain.com
-    service: http://localhost:4242
-  - service: http_status:404
-```
-
-Start tunnel (already in .bashrc):
-```bash
-cloudflared tunnel run redmi-server
 ```
 
 ---
@@ -586,29 +546,6 @@ source ~/.bashrc
 
 ---
 
-### Optional: Install Cloudflare Tunnel
-
-```bash
-pkg install cloudflared
-
-# Authenticate
-cloudflared tunnel login
-
-# Create tunnel
-cloudflared tunnel create redmi-server
-```
-
-Add to `.bashrc`:
-```bash
-# Cloudflare Tunnel
-if ! pgrep -x "cloudflared" > /dev/null; then
-    nohup cloudflared tunnel run redmi-server > /dev/null 2>&1 &
-    echo "Cloudflare Tunnel started."
-fi
-```
-
----
-
 ### Optional: Install File Browser
 
 ```bash
@@ -682,7 +619,6 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 For questions or collaboration:
 
 - **GitHub**: [@starskg](https://github.com/starskg)
-- **Email**: shuhratstars@gmail.com
 - **Issues**: [Report a bug](../../issues/new)
 
 ---
@@ -692,7 +628,6 @@ For questions or collaboration:
 - **MistServer** - Efficient media streaming engine
 - **Termux** - Android terminal emulator
 - **Nginx** - High-performance web server
-- **Cloudflare** - Secure tunneling solution
 - **PRoot** - User-space implementation of chroot
 
 ---
@@ -714,8 +649,14 @@ This setup is intended for personal/educational use. Ensure compliance with your
   - One-command automated installation
   - Interactive configuration prompts
   - Auto-start and persistence features
-  - Optional Cloudflare Tunnel and File Browser
+  - Direct port forwarding support (full UDP/TCP)
+  - Optional File Browser
   - Comprehensive troubleshooting guide
+
+- **v1.1.0** (2026-03-19)
+  - Removed Cloudflare Tunnel dependency (free tier blocks UDP/SRT)
+  - Switched to direct router port forwarding for full UDP support
+  - Updated default password policy
 
 ---
 

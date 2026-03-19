@@ -43,7 +43,6 @@ echo -e "${YELLOW}Services:${NC}"
 check_service "SSH Server" "sshd" "8022"
 check_service "Nginx Proxy" "nginx" "8080"
 check_service "MistServer" "MistController" "4242"
-check_service "Cloudflare Tunnel" "cloudflared" ""
 check_service "File Browser" "filebrowser" "9999"
 
 echo
@@ -63,6 +62,14 @@ echo "  restart-all      - Restart all services"
 echo "  restart-nginx    - Restart Nginx only"
 echo "  restart-mist     - Restart MistServer only"
 echo "  logs            - View recent logs"
+echo
+echo -e "${YELLOW}Port Forwarding (Router):${NC}"
+local_ip=$(ifconfig 2>/dev/null | grep -A 1 "wlan0" | grep "inet " | awk '{print $2}')
+echo -e "  TCP 1935 (RTMP)  → $local_ip"
+echo -e "  TCP 4242 (Admin) → $local_ip"
+echo -e "  TCP 8080 (HLS)   → $local_ip"
+echo -e "  TCP 8022 (SSH)   → $local_ip"
+echo -e "  UDP 8889 (SRT)   → $local_ip"
 echo
 
 # Check for issues

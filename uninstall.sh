@@ -41,7 +41,6 @@ echo -e "${BLUE}Stopping services...${NC}"
 pkill -f MistController 2>/dev/null && echo "✓ MistServer stopped"
 nginx -s stop 2>/dev/null && echo "✓ Nginx stopped"
 pkill sshd 2>/dev/null && echo "✓ SSH stopped"
-pkill cloudflared 2>/dev/null && echo "✓ Cloudflare Tunnel stopped"
 tmux kill-session -t fb_session 2>/dev/null && echo "✓ File Browser stopped"
 
 # Release wake lock
@@ -91,12 +90,12 @@ echo
 
 # Ask about packages
 echo -e "${YELLOW}Remove installed packages?${NC}"
-echo "This will remove: nginx, openssh, proot-distro, tmux, cloudflared"
+echo "This will remove: nginx, openssh, proot-distro, tmux"
 read -p "Continue? (y/n): " remove_pkgs
 
 if [ "$remove_pkgs" = "y" ]; then
     echo -e "${BLUE}Removing packages...${NC}"
-    pkg uninstall -y nginx openssh proot-distro tmux cloudflared 2>/dev/null
+    pkg uninstall -y nginx openssh proot-distro tmux 2>/dev/null
     echo "✓ Packages removed"
 fi
 
